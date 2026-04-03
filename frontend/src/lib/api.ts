@@ -1,5 +1,10 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+const defaultHeaders: Record<string, string> = {
+  "Content-Type": "application/json",
+  "ngrok-skip-browser-warning": "true",
+};
+
 export const sendChatStream = async (
   question: string,
   userId: string = "default",
@@ -8,7 +13,7 @@ export const sendChatStream = async (
 ) => {
   const res = await fetch(`${API_URL}/chat/stream`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: defaultHeaders,
     body: JSON.stringify({ question, user_id: userId }),
   });
 
@@ -49,7 +54,9 @@ export const sendChatStream = async (
 export const fetchMemories = async (
   userId: string = "default",
 ): Promise<Record<string, string>> => {
-  const res = await fetch(`${API_URL}/memory/${userId}`);
+  const res = await fetch(`${API_URL}/memory/${userId}`, {
+    headers: { "ngrok-skip-browser-warning": "true" },
+  });
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
 };
@@ -61,7 +68,7 @@ export const saveMemory = async (
 ) => {
   const res = await fetch(`${API_URL}/memory/`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: defaultHeaders,
     body: JSON.stringify({ user_id: userId, key, value }),
   });
   if (!res.ok) throw new Error(`API error: ${res.status}`);
@@ -71,6 +78,7 @@ export const saveMemory = async (
 export const deleteMemory = async (key: string, userId: string = "default") => {
   const res = await fetch(`${API_URL}/memory/${userId}/${key}`, {
     method: "DELETE",
+    headers: { "ngrok-skip-browser-warning": "true" },
   });
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
